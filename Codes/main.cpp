@@ -58,7 +58,7 @@ void solve(matrix *p,int n){
         printf("+(%f/%f)*(n^%d)*(%d^n) ",ar[t],temp[t],n_c,c_n);
         for(int i=0;i<t+1;++i)
             ar[i]-=temp[i]*ar[t]/temp[t];
-        while(!ar[t] && t>-1)
+        while(t>-1 && !ar[t])
             t--;
     }
     printf("\n");
@@ -112,8 +112,8 @@ matrix *brute(matrix *t,double epsilon,int mode=0,int first=0){
 }
 
 int main(){
-    freopen("/home/semih/Desktop/Coding/Proj/test/test.in","r",stdin);
-    freopen("/home/semih/Desktop/Coding/Proj/test/test.out","w",stdout);
+    freopen("/home/semih/Desktop/Proj/test/test.in","r",stdin);
+    freopen("out.txt","w",stdout);
 
     int n;
     double epsilon;
@@ -131,7 +131,7 @@ int main(){
     matrix *p=brute(&a,epsilon);
     int loop=(p==NULL);
     while(loop){
-        printf("Kararsiz veri\n");
+        // printf("Kararsiz veri\n");
         int extra;
         cin>>extra;
         if(!extra)
@@ -149,10 +149,12 @@ int main(){
         p=brute(&a,epsilon);
         loop=(p==NULL);
     }
-    printf("%d %.18f\n",n,epsilon);
+    
+    FILE *fp=fopen("in.txt","w");
+    fprintf(fp,"%d %.18f\n",n,epsilon);
     for(int i=0;i<n;++i)
-        printf("%f ",ar2[i]);
-    printf("\n\n");
+        fprintf(fp,"%f ",ar2[i]);
+    fclose(fp);
 
     if(p==NULL){
         a.ar=ar2;
