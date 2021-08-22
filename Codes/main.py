@@ -1,3 +1,4 @@
+from colour import Color
 import plotly.graph_objects as go
 import numpy as np
 import plotly.io as pio
@@ -5,21 +6,50 @@ import plotly.io as pio
 pio.renderers.default='browser'
 
 lis=[]
-t=1
-with open("in.txt","r") as f:
-    for i in f.read().strip().split():
-        if(t==2):
-            check=float(i)
-        else:
-            lis.append(float(i))
-        t+=1
-
-trues=[]
+Nnumber=0
 cnt=1
-print("Check={}".format(check))
-#check=float(input("Check="))
+e=[]
 
-with open ("out.txt","r") as f:
+# left=float(input("Left="))
+# right=float(input("Right="))
+# prec=float(input("Prec="))
+left=0
+right=25
+prec=40
+
+Nformula=0
+fig=go.Figure()
+X=np.linspace(left,right,int( (right-left)*prec+1 ) )
+formulas=[]
+
+with open("/home/semih/Desktop/Proj/Codes/in.txt","r") as f:
+    for i in f.read().strip().split(sep="\n"):
+        if(cnt==1):
+            Nnumber=int(i.split()[0])
+            check=float(i.split()[1])
+        else:
+            lis.append([ float(i.split()[0]) , float(i.split()[1]) ])
+        cnt+=1
+
+cnt=1
+for i in lis:
+    Scatter=go.Scatter(
+        mode="markers",
+        x=[i[0]],
+        y=[i[1]],
+        name="Point {}".format(cnt),
+        marker=dict(
+            color="black",
+            size=10
+        ),
+        showlegend=False
+    )
+    fig.add_trace(Scatter)
+    cnt+=1
+
+cnt=1
+
+with open ("/home/semih/Desktop/Proj/Codes/out.txt","r") as f:
     for temp in f:
         if(temp=="NO\n" or temp=="\n"):
             continue
@@ -29,36 +59,45 @@ with open ("out.txt","r") as f:
                 s+='**'
             else:
                 s+=i
+        formulas.append(s)
+        Nformula+=1
+
         def func(n):
             n=eval(s)
             return n
-        
+
+        err=0.0
         t=True
-        for i in range(1,int(lis[0])+1):
-            if(abs(lis[i]-func(i))>=check):
-                t=False
-                #
-                break
-        if(t):
-            trues.append([s,cnt])
-        cnt+=1
+        for i in lis:
+            difference=i[1]-func(i[0])
+            err+=difference*difference 
+        e.append(err)
 
-left=float(input("Left="))
-right=float(input("Right="))
-prec=float(input("Prec="))
+cnt=0
+colors=list(Color("green").range_to(Color("red"),Nformula))
 
-fig=go.Figure()
-X=np.linspace(left,right,int( (right-left)*prec+1 ) )
-for i in trues:
-    print(i[1])
+for temp in np.argsort(e):
     def func(n):
-        return eval(i[0])
+        n=eval(s)
+        return n
+    s=formulas[temp]
     ys=[]
     for j in X:
         ys.append(func(j))
-    fig.add_trace(go.Scatter(x=X, y=np.array(ys),mode="lines",name=str(i[1]) ) ) 
+    Scatter=go.Scatter(
+        mode="lines",
+        x=X,
+        y=np.array(ys),
+        marker=dict(color=colors[cnt].get_hex()),   
+        showlegend=False
+    )
+    fig.add_trace(Scatter)
+    if(cnt==0):
+        pio.show(fig)
+    cnt+=1
 
-fig.layout.xaxis.zerolinecolor="palevioletred"
-fig.layout.yaxis.zerolinecolor="palevioletred"
+fig.layout.xaxis.zerolinecolor="blue"
+fig.layout.yaxis.zerolinecolor="blue"
+# fig.layout.yaxis.range=[1,150]
 fig.write_image("fig.png")
 pio.show(fig)

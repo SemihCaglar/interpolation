@@ -153,7 +153,7 @@ int main(){
     FILE *fp=fopen("in.txt","w");
     fprintf(fp,"%d %.18f\n",n,epsilon);
     for(int i=0;i<n;++i)
-        fprintf(fp,"%f ",ar2[i]);
+        fprintf(fp,"%d %f\n",i+1,ar2[i]);
     fclose(fp);
 
     if(p==NULL){
