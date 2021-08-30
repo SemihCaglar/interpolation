@@ -112,7 +112,7 @@ matrix *brute(matrix *t,double epsilon,int mode=0,int first=0){
 }
 
 int main(){
-    freopen("/home/semih/Desktop/Proj/test/test.in","r",stdin);
+    // freopen("/home/semih/Desktop/Proj/test/test.in","r",stdin);
     freopen("out.txt","w",stdout);
 
     int n;
