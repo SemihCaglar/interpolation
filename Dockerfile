@@ -6,4 +6,4 @@ RUN apk add --no-cache --upgrade openrc openssh git vim gcc g++ gdb make binutil
 ADD Codes "/home/www-data/Codes"
 COPY httpd.conf "/usr/local/apache2/conf"
 EXPOSE 80
-CMD [ "sh", "-c", "cd /home/www-data/Codes && make && httpd -D FOREGROUND" ]
+CMD [ "sh", "-c", "cd /home/www-data/Codes && make -s && httpd -D FOREGROUND" ]
