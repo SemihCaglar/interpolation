@@ -113,6 +113,7 @@ matrix *brute(matrix *t,double epsilon,int mode=0,int first=0){
 
 int main(){
     // freopen("/home/semih/Desktop/Proj/test/test.in","r",stdin);
+    cout<<"N, E ve sayilari girin:"<<endl;
     freopen("out.txt","w",stdout);
 
     int n;
@@ -130,25 +131,25 @@ int main(){
         ar2[i]=ar[i];
     matrix *p=brute(&a,epsilon);
     int loop=(p==NULL);
-    while(loop){
-        // printf("Kararsiz veri\n");
-        int extra;
-        cin>>extra;
-        if(!extra)
-            break;
-        n+=extra;
-        ar=(double *)realloc(ar,n*sizeof(double));
-        ar2=(double *)realloc(ar2,n*sizeof(double));
-        for(int i=0;i<n;++i){
-            if(i>=n-extra)
-                cin>>ar2[i];
-            ar[i]=ar2[i];
-        }
-        a.ar=ar;
-        a.sp=a.size=n;
-        p=brute(&a,epsilon);
-        loop=(p==NULL);
-    }
+    // while(loop){
+    //     // printf("Kararsiz veri\n");
+    //     int extra;
+    //     cin>>extra;
+    //     if(!extra)
+    //         break;
+    //     n+=extra;
+    //     ar=(double *)realloc(ar,n*sizeof(double));
+    //     ar2=(double *)realloc(ar2,n*sizeof(double));
+    //     for(int i=0;i<n;++i){
+    //         if(i>=n-extra)
+    //             cin>>ar2[i];
+    //         ar[i]=ar2[i];
+    //     }
+    //     a.ar=ar;
+    //     a.sp=a.size=n;
+    //     p=brute(&a,epsilon);
+    //     loop=(p==NULL);
+    // }
     
     FILE *fp=fopen("in.txt","w");
     fprintf(fp,"%d %.18f\n",n,epsilon);
