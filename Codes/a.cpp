@@ -2,7 +2,6 @@
 using namespace std;
 
 typedef pair<double,double> dd;
-int n;
 vector<dd> pts;
 int compress_size=15;
 double width;
@@ -68,6 +67,7 @@ void solve(matrix *p,int n){
         t--;
 
     vector<term> formula;
+    formula.push_back(term(0.0,0.0,ilk,aralik));
 
     while(t>-1){
         int spsi=upper_bound(sps,sps+nsps,t)-sps, c_n=max(1,spsi+1), n_c=spsi ? max(t-sps[spsi-1],0) : t;
@@ -85,11 +85,11 @@ void solve(matrix *p,int n){
     for(int i=0;i<pts.size();++i){
         double x1=pts[i].first;
         //  ( 2*(x-n0)+w ) / 2*w
-        double x2 = ( 2*(x1-n0)+width )/(2*width);
+        double x2 = ( (x1-n0)+width )/(width);
         double x3 = (x2-ilk+aralik)/aralik;
 
         double sum=0;
-        for(int j=0;j<formula.size();j++)
+        for(int j=1;j<formula.size();j++)
             sum += formula[j].a * pow(x3,formula[j].c) * pow(formula[j].d,x3) / formula[j].b;
         error+=(pts[i].second-sum)*(pts[i].second-sum);
     } 
@@ -156,7 +156,7 @@ vector<double> compress(vector<dd> ar){
         compress_size=ar.size();
 
     sort(ar.begin(),ar.end());
-    width=(ar.rbegin()->first - ar.begin()->first)/compress_size;
+    width=(ar.rbegin()->first - ar.begin()->first)/(compress_size-1);
     n0=ar.begin()->first;
 
     double left=ar.begin()->first, right=left+width, sum=0;
@@ -166,7 +166,7 @@ vector<double> compress(vector<dd> ar){
     vector<double> ans(compress_size);
 
     while(ind<ar.size()){
-        if(ar[ind].first>right){
+        if(ar[ind].first>=right){
             left=right;
             right=left+width;
             if(cnt==0)
@@ -206,8 +206,9 @@ vector<double> compress(vector<dd> ar){
 
 int main(){
     // freopen("/home/semih/Desktop/Proj/test/test.in","r",stdin);
-    
+
     cout<<"N ve sayilari girin:"<<endl;
+    int n; 
     cin>>n;
     pts.resize(n);
     for(int i=0;i<n;++i){
@@ -215,7 +216,21 @@ int main(){
         cin>>x>>y;
         pts[i]={x,y};
     }
+    FILE *fp=fopen("points.txt","w");
+    for(int i=0;i<pts.size();i++)
+        fprintf(fp,"%f %f\n",pts[i].first,pts[i].second);
+    fclose(fp);
+    
     vector<double> zip = compress(pts);
+
+    fp=fopen("zip.txt","w");
+    fprintf(fp,"%f %f\n",n0,width);
+    for(int i=0;i<zip.size();i++)
+        fprintf(fp,"%f %f\n",n0+i*width,zip[i]);
+    fclose(fp);
+
+    fp=fopen("formulas.txt","w");
+
     for(int num=1;num<=compress_size;num++){
         min_error=-5;
         for(int diff=1;diff<=(compress_size)/(num)+1;diff++)
@@ -226,10 +241,11 @@ int main(){
                 ilk=start+1,aralik=diff;
                 find_formulas(num,ar);
             }
-        cout<<num<<" "<<min_error<<endl;
-        for(int i=0;i<bestformula.size();i++)
-            printf("+(%f/%f)*(n^%d)*(%d^n) ",bestformula[i].a,bestformula[i].b,bestformula[i].c,bestformula[i].d);
-        printf("\n");
+        // cout<<num<<" "<<min_error<<endl;
+        fprintf(fp,"%f %d %d\n", min_error, bestformula[0].c, bestformula[0].d);
+        for(int i=1;i<bestformula.size();i++)
+            fprintf(fp,"+(%f/%f)*(n**%d)*(%d**n) ",bestformula[i].a,bestformula[i].b,bestformula[i].c,bestformula[i].d);
+        fprintf(fp,"\n");
     }
 
     return 0;
