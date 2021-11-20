@@ -1,18 +1,11 @@
-from colour import Color
 import plotly.graph_objects as go
 import numpy as np
 import os
-# import plotly.io as pio
 
-# pio.renderers.default='browser'
-
-directory="/home/semih/html"
+directory="/home/www-data/html"
 lis=[]
 cnt=1
 
-# left=float(input("Left="))
-# right=float(input("Right="))
-# prec=float(input("Prec="))
 left=-500
 right=500
 prec=100;
@@ -24,7 +17,7 @@ best_fig=go.Figure()
 
 X=np.linspace(left,right,int( (right-left)*prec+1 ) )
 
-with open("/home/semih/Desktop/Proj/Codes/points.txt","r") as f:
+with open("points.txt","r") as f:
     for i in f.read().strip().split(sep="\n"):
         lis.append([ float(i.split()[0]) , float(i.split()[1]) ])
 
@@ -49,7 +42,7 @@ n0=0
 width=0
 zip=[]
 
-with open("/home/semih/Desktop/Proj/Codes/zip.txt","r") as f:
+with open("zip.txt","r") as f:
     for i in f.read().strip().split(sep="\n"):
         if(cnt==1):
             n0=float(i.split()[0])
@@ -94,7 +87,7 @@ best_fig.layout.yaxis.range=[-150,150]
 
 best_Scatter=0
 
-with open ("/home/semih/Desktop/Proj/Codes/formulas.txt","r") as f:
+with open ("formulas.txt","r") as f:
     for temp in f:
 
         def func(n):            
@@ -107,6 +100,7 @@ with open ("/home/semih/Desktop/Proj/Codes/formulas.txt","r") as f:
             diff=int(temp.split()[2])
 
         else:
+            print("Number: {}".format(cnt//2))
             ys=[]
             for i in X:
                 x2= (i-n0+width)/width
@@ -137,10 +131,12 @@ with open ("/home/semih/Desktop/Proj/Codes/formulas.txt","r") as f:
             if(min_error<0 or error<min_error):
                 min_error=error
                 best_Scatter=Scatter
-        print(cnt)
         cnt+=1
 
 best_fig.add_trace(best_Scatter)
+
+os.system("mkdir -p "+directory+"/All_Formulas")
+os.system("mkdir -p "+directory+"/Best_Formula")
 
 all_fig.write_html(directory+"/All_Formulas/index.html")
 best_fig.write_html(directory+"/Best_Formula/index.html")

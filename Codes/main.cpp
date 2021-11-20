@@ -7,13 +7,12 @@ int compress_size=15;
 double width;
 double n0;
 double min_error;
-double aralik,ilk; // (x-ilk+aralik)/aralik
+double aralik,ilk; 
 
 typedef struct term{  // (a/b)*(n^c)*(d^n)
     term(double a, double b, int c, int d){
         this->a=a,this->b=b,this->c=c,this->d=d;
     }
-    
     double a,b;
     int c,d;
 }term;
@@ -75,7 +74,6 @@ void solve(matrix *p,int n){
         customs(temp,t+1,sps,nsps,n_c,c_n,1);
         formula.push_back(term(ar[t],temp[t],n_c,c_n));
 
-        // printf("+(%f/%f)*(n^%d)*(%d^n) ",ar[t],temp[t],n_c,c_n);
         for(int i=0;i<t+1;++i)
             ar[i]-=temp[i]*ar[t]/temp[t];
         while(t>-1 && !ar[t])
@@ -84,7 +82,6 @@ void solve(matrix *p,int n){
     double error=0;
     for(int i=0;i<pts.size();++i){
         double x1=pts[i].first;
-        //  ( 2*(x-n0)+w ) / 2*w
         double x2 = ( (x1-n0)+width )/(width);
         double x3 = (x2-ilk+aralik)/aralik;
 
@@ -240,13 +237,14 @@ int main(){
                     ar[i]=zip[start+i*diff];
                 ilk=start+1,aralik=diff;
                 find_formulas(num,ar);
+                free(ar);
             }
-        // cout<<num<<" "<<min_error<<endl;
         fprintf(fp,"%f %d %d\n", min_error, bestformula[0].c, bestformula[0].d);
         for(int i=1;i<bestformula.size();i++)
             fprintf(fp,"+(%f/%f)*(n**%d)*(%d**n) ",bestformula[i].a,bestformula[i].b,bestformula[i].c,bestformula[i].d);
         fprintf(fp,"\n");
     }
+    fclose(fp);
 
     return 0;
 }
