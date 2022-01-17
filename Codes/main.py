@@ -1,25 +1,40 @@
+import math
 import plotly.graph_objects as go
 import numpy as np
 import os
 
-directory="/home/www-data/html"
+directory="/home/semih/html"
 lis=[]
 cnt=1
-
-left=-500
-right=500
-prec=100;
 
 Scatters=[]
 
 all_fig=go.Figure()
 best_fig=go.Figure()
+err_fig=go.Figure()
 
-X=np.linspace(left,right,int( (right-left)*prec+1 ) )
+# X=np.linspace(left,right,int( (right-left)*prec+1 ) )
+# X=np.linspace(left,right,20000 )
 
 with open("points.txt","r") as f:
     for i in f.read().strip().split(sep="\n"):
         lis.append([ float(i.split()[0]) , float(i.split()[1]) ])
+
+# burada max-min x ve y leri bulcaz.
+points_max_x=lis[0][0]
+points_min_x=lis[0][0]
+points_max_y=lis[0][1]
+points_min_y=lis[0][1]
+
+for point in lis:
+    points_max_x=max(points_max_x,point[0])
+    points_min_x=min(points_min_x,point[0])
+    points_max_y=max(points_max_y,point[1])
+    points_min_y=min(points_min_y,point[1])
+
+left=points_min_x-(points_max_x-points_min_x)/8
+right=points_max_x+(points_max_x-points_min_x)/8
+X=np.linspace(left,right,2000)
 
 cnt=1
 for i in lis:
@@ -80,12 +95,15 @@ for i in Scatters:
 
 all_fig.layout.xaxis.zerolinecolor="blue"
 all_fig.layout.yaxis.zerolinecolor="blue"
-all_fig.layout.yaxis.range=[-150,150]
+all_fig.layout.yaxis.range=[points_min_y-(points_max_y-points_min_y)/8 , points_max_y+(points_max_y-points_min_y)/8]
+
 best_fig.layout.xaxis.zerolinecolor="blue"
 best_fig.layout.yaxis.zerolinecolor="blue"
-best_fig.layout.yaxis.range=[-150,150]
+best_fig.layout.yaxis.range=[points_min_y-(points_max_y-points_min_y)/8 , points_max_y+(points_max_y-points_min_y)/8]
 
 best_Scatter=0
+
+errors=[]
 
 with open ("formulas.txt","r") as f:
     for temp in f:
@@ -98,6 +116,7 @@ with open ("formulas.txt","r") as f:
             error=float(temp.split()[0])
             start=int(temp.split()[1])
             diff=int(temp.split()[2])
+            errors.append(math.log2(error));
 
         else:
             print("Number: {}".format(cnt//2))
@@ -119,7 +138,7 @@ with open ("formulas.txt","r") as f:
             fig=go.Figure()
             fig.layout.xaxis.zerolinecolor="blue"
             fig.layout.yaxis.zerolinecolor="blue"
-            fig.layout.yaxis.range=[-150,150]
+            fig.layout.yaxis.range=[points_min_y-(points_max_y-points_min_y)/8 , points_max_y+(points_max_y-points_min_y)/8]
 
             for i in Scatters:
                 fig.add_trace(i)
@@ -140,3 +159,44 @@ os.system("mkdir -p "+directory+"/Best_Formula")
 
 all_fig.write_html(directory+"/All_Formulas/index.html")
 best_fig.write_html(directory+"/Best_Formula/index.html")
+
+cnt=1
+
+for i in errors:
+    Scatter=go.Scatter(
+        mode="markers",
+        x=[cnt],
+        y=[i],
+        name="Error {}".format(cnt),
+        marker=dict(
+            color="red",
+            size=10
+        ),
+        showlegend=True
+    )
+    err_fig.add_trace(Scatter)
+    cnt+=1
+
+for cnt in range(1,len(errors)):
+    err_X=np.linspace(cnt,cnt+1,200)
+    err_Y=[]
+    for i in err_X:
+        err_Y.append( errors[cnt] - (errors[cnt]-errors[cnt-1]) * (cnt+1-i) )
+    
+    Scatter=go.Scatter(
+        mode="lines",
+        x=err_X,
+        y=np.array(err_Y),
+        marker=dict(color="green"),   
+        showlegend=False
+    )
+    err_fig.add_trace(Scatter)
+    
+
+err_fig.layout.xaxis.zerolinecolor="blue"
+err_fig.layout.yaxis.zerolinecolor="blue"
+err_fig.layout.yaxis.range=[-10,50]
+err_fig.layout.xaxis.range=[0,len(errors)+5]
+
+os.system("mkdir -p "+directory+"/Errors")
+err_fig.write_html(directory+"/Errors/index.html")
