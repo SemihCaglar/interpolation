@@ -239,7 +239,7 @@ int main(){
                 find_formulas(num,ar);
                 free(ar);
             }
-        fprintf(fp,"%f %d %d\n", min_error, bestformula[0].c, bestformula[0].d);
+        fprintf(fp,"%f %d %d\n", sqrt(min_error/(n-1)), bestformula[0].c, bestformula[0].d);
         for(int i=1;i<bestformula.size();i++)
             fprintf(fp,"+(%f/%f)*(n**%d)*(%d**n) ",bestformula[i].a,bestformula[i].b,bestformula[i].c,bestformula[i].d);
         fprintf(fp,"\n");
