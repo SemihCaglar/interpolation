@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 import numpy as np
 import os
 
-directory="/home/semih/html"
+directory="/home/www-data/html"
 lis=[]
 cnt=1
 
@@ -13,14 +13,10 @@ all_fig=go.Figure()
 best_fig=go.Figure()
 err_fig=go.Figure()
 
-# X=np.linspace(left,right,int( (right-left)*prec+1 ) )
-# X=np.linspace(left,right,20000 )
-
 with open("points.txt","r") as f:
     for i in f.read().strip().split(sep="\n"):
         lis.append([ float(i.split()[0]) , float(i.split()[1]) ])
 
-# burada max-min x ve y leri bulcaz.
 points_max_x=lis[0][0]
 points_min_x=lis[0][0]
 points_max_y=lis[0][1]
@@ -44,9 +40,10 @@ for i in lis:
         y=[i[1]],
         name="Point {}".format(cnt),
         marker=dict(
-            color="black",
-            size=14
+            color="MediumPurple",
+            size=10
         ),
+        # opacity=0.8,
         showlegend=False
     )
     Scatters.append(Scatter)
@@ -76,8 +73,9 @@ for i in zip:
         name="Zip {}".format(cnt),
         marker=dict(
             color="red",
-            size=10
+            size=11
         ),
+        # opacity=0.8,
         showlegend=False
     )
     Scatters.append(Scatter)
@@ -96,10 +94,12 @@ for i in Scatters:
 all_fig.layout.xaxis.zerolinecolor="blue"
 all_fig.layout.yaxis.zerolinecolor="blue"
 all_fig.layout.yaxis.range=[points_min_y-(points_max_y-points_min_y)/8 , points_max_y+(points_max_y-points_min_y)/8]
+all_fig.layout.xaxis.range=[left,right]
 
 best_fig.layout.xaxis.zerolinecolor="blue"
 best_fig.layout.yaxis.zerolinecolor="blue"
 best_fig.layout.yaxis.range=[points_min_y-(points_max_y-points_min_y)/8 , points_max_y+(points_max_y-points_min_y)/8]
+best_fig.layout.xaxis.range=[left,right]
 
 best_Scatter=0
 
@@ -116,7 +116,11 @@ with open ("formulas.txt","r") as f:
             error=float(temp.split()[0])
             start=int(temp.split()[1])
             diff=int(temp.split()[2])
-            errors.append(math.log2(error));
+            if(error<=1.0):
+                error=error
+            else:
+                error=math.log2(error)
+            errors.append(error)
 
         else:
             print("Number: {}".format(cnt//2))
@@ -131,7 +135,7 @@ with open ("formulas.txt","r") as f:
                 x=X,
                 y=np.array(ys),
                 name="Number: {}".format(cnt//2),
-                marker=dict(color="green"),   
+                # marker=dict(color="green"),   
                 showlegend=True
             )
             os.system("mkdir -p "+directory+"/Number_{}".format(cnt//2))
@@ -139,6 +143,7 @@ with open ("formulas.txt","r") as f:
             fig.layout.xaxis.zerolinecolor="blue"
             fig.layout.yaxis.zerolinecolor="blue"
             fig.layout.yaxis.range=[points_min_y-(points_max_y-points_min_y)/8 , points_max_y+(points_max_y-points_min_y)/8]
+            fig.layout.xaxis.range=[left,right]
 
             for i in Scatters:
                 fig.add_trace(i)
@@ -192,11 +197,8 @@ for cnt in range(1,len(errors)):
     )
     err_fig.add_trace(Scatter)
     
-
 err_fig.layout.xaxis.zerolinecolor="blue"
 err_fig.layout.yaxis.zerolinecolor="blue"
-err_fig.layout.yaxis.range=[-10,50]
-err_fig.layout.xaxis.range=[0,len(errors)+5]
 
 os.system("mkdir -p "+directory+"/Errors")
 err_fig.write_html(directory+"/Errors/index.html")
