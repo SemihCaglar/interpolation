@@ -156,7 +156,7 @@ vector<double> compress(vector<dd> ar){
     width=(ar.rbegin()->first - ar.begin()->first)/(compress_size-1);
     n0=ar.begin()->first;
 
-    double left=ar.begin()->first, right=left+width, sum=0;
+    double left = ar.begin()->first - width/2, right=left+width, sum=0;
     int cnt=0,range=0,ind=0;
 
     vector<bool> not_found(ar.size(),false);
