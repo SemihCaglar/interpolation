@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 import numpy as np
 import os
 
-directory="/home/www-data/html"
+directory="/home/semih/html"
 lis=[]
 cnt=1
 
@@ -117,10 +117,9 @@ with open ("formulas.txt","r") as f:
             start=int(temp.split()[1])
             diff=int(temp.split()[2])
             if(error<=1.0):
-                error=error
+                errors.append(0)
             else:
-                error=math.log2(error)
-            errors.append(error)
+                errors.append(math.log2(error))
 
         else:
             print("Number: {}".format(cnt//2))
