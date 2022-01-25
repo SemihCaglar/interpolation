@@ -137,8 +137,8 @@ with open ("formulas.txt","r") as f:
                 x=X,
                 y=np.array(ys),
                 name="Number: {}".format(cnt//2),
-                # marker=dict(color="green"),   
-                showlegend=True
+                # marker=dict(color="green"),  
+                showlegend=False
             )
             os.system("mkdir -p "+directory+"/Number_{}".format(cnt//2))
             fig=go.Figure()
