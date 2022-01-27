@@ -20,14 +20,14 @@ typedef struct term{  // (a/b)*(n^c)*(d^n)
 vector<term> bestformula;
 
 typedef struct matrix{
-    double *ar;
+    vector<double> ar;
     int sp;
     int size;
     struct matrix *next;
     struct matrix *previous;   
 }matrix;
 
-void cmatrix(double *ar,double *end){
+void cmatrix(vector<double>::iterator ar,vector<double>::iterator end){
     double k;
     int n=end-ar;
     for(int i=1;i<n;ar[n-1]=k,i++){
@@ -40,18 +40,19 @@ void cmatrix(double *ar,double *end){
     }
 }
 
-void customs(double *ar,int n,int *sps,int nsps,int n_c,int c_n,int c){
+void customs(vector<double> &ar,int n,vector<int> sps,int nsps,int n_c,int c_n,int c){
     for(int i=0;i<n;++i)
         ar[i]=pow(i+1,n_c)*pow(c_n,i+1)*c;
-    cmatrix(ar,ar+n);
+    cmatrix(ar.begin(),ar.begin()+n);
 
     for(int i=0;i<nsps;i++)
-        cmatrix(ar+sps[i],ar+n);
+        cmatrix(ar.begin()+sps[i],ar.begin()+n);
 }
 
 void solve(matrix *p,int n){
-    int sps[n],nsps=0,t=0;
-    double ar[n];
+    int nsps=0,t=0;
+    vector<int> sps(n);
+    vector<double> ar(n);
 
     while(p!=NULL){
         if(p->sp!=p->size)
@@ -69,8 +70,8 @@ void solve(matrix *p,int n){
     formula.push_back(term(0.0,0.0,ilk,aralik));
 
     while(t>-1){
-        int spsi=upper_bound(sps,sps+nsps,t)-sps, c_n=max(1,spsi+1), n_c=spsi ? max(t-sps[spsi-1],0) : t;
-        double temp[t+1];
+        int spsi=upper_bound(sps.begin(),sps.begin()+nsps,t)-sps.begin(), c_n=max(1,spsi+1), n_c=spsi ? max(t-sps[spsi-1],0) : t;
+        vector<double> temp(t+1);
         customs(temp,t+1,sps,nsps,n_c,c_n,1);
         formula.push_back(term(ar[t],temp[t],n_c,c_n));
 
@@ -107,20 +108,23 @@ matrix *brute(matrix *t,int mode=0,int first=0){
         }
         return NULL;
     }
-    cmatrix(t->ar,t->ar+t->size);
+    cmatrix(t->ar.begin(),t->ar.begin()+t->size);
 
     bool found=0;
     int i=t->size-2;
     while(!found and i>(-1+first)){
         t->sp=i;
-        t->next=(matrix*)malloc(sizeof(matrix));
+        t->next=new matrix;
         t->next->next=NULL;
         t->next->previous=t;
         t->next->size=t->size-i;
-        t->next->ar=(double*)malloc(sizeof(double)*(t->next->size));
+        t->next->ar.clear();
+        t->next->ar=vector<double>(t->next->size);
         t->next->sp=t->next->size;
 
-        memcpy(t->next->ar,t->ar+t->sp,sizeof(double)*t->next->size);
+        for(int i=0;i<t->next->ar.size();++i)
+            t->next->ar[i]=t->ar[i+t->sp];
+
         t->next=brute(t->next,mode,1);
         if(t->next!=NULL)
             found=1;
@@ -141,7 +145,7 @@ matrix *brute(matrix *t,int mode=0,int first=0){
     return t;
 }
 
-void find_formulas(int n,double *ar){
+void find_formulas(int n,vector<double> ar){
     matrix a={.sp=n,.size=n};
     a.ar=ar;
     brute(&a,1,0);
@@ -202,7 +206,7 @@ vector<double> compress(vector<dd> ar){
 }
 
 int main(){
-    // freopen("/home/semih/Desktop/Proj/test/test.in","r",stdin);
+    freopen("/home/semih/Desktop/Proj/test/test.in","r",stdin);
 
     cout<<"N ve sayilari girin:"<<endl;
     int n; 
@@ -232,12 +236,11 @@ int main(){
         min_error=-5;
         for(int diff=1;diff<=(compress_size)/(num)+1;diff++)
             for(int start=0;start<=compress_size-diff*(num-1)-1;start++){
-                double *ar=(double*)malloc(num*sizeof(double));
+                vector<double> ar(num);
                 for(int i=0;i<num;++i)
                     ar[i]=zip[start+i*diff];
                 ilk=start+1,aralik=diff;
                 find_formulas(num,ar);
-                free(ar);
             }
         fprintf(fp,"%f %d %d\n", sqrt(min_error/(n-1)), bestformula[0].c, bestformula[0].d);
         for(int i=1;i<bestformula.size();i++)
