@@ -1,4 +1,8 @@
-#include<bits/stdc++.h>
+#include<iostream>
+#include<vector>
+#include<algorithm>
+#include<cmath>
+
 using namespace std;
 
 typedef pair<double,double> dd;
@@ -98,14 +102,12 @@ void solve(matrix *p,int n){
 
 }
 
-matrix *brute(matrix *t,int mode=0,int first=0){
+matrix *brute(matrix *t,int first){
     if(t->size==1){
-        if(mode){
-            int size=1;
-            while(t->previous!=NULL)
-                t=t->previous,size+=t->size;
-            solve(t,size);
-        }
+        int size=1;
+        while(t->previous!=NULL)
+            t=t->previous,size+=t->size;
+        solve(t,size);
         return NULL;
     }
     cmatrix(t->ar.begin(),t->ar.begin()+t->size);
@@ -125,30 +127,28 @@ matrix *brute(matrix *t,int mode=0,int first=0){
         for(int i=0;i<t->next->ar.size();++i)
             t->next->ar[i]=t->ar[i+t->sp];
 
-        t->next=brute(t->next,mode,1);
+        t->next=brute(t->next,1);
         if(t->next!=NULL)
             found=1;
         i--;
     }
-    if(mode){
-        int size=0;
-        t->sp=t->size;
-        while(t->previous!=NULL)
-            size+=t->size,t=t->previous;
-        size+=t->size;
-        solve(t,size);
-    }
-    if(!found){
-        // free(t);
+    int size=0;
+    t->sp=t->size;
+    while(t->previous!=NULL)
+        size+=t->size,t=t->previous;
+    size+=t->size;
+    solve(t,size);
+    
+    if(!found)
         return NULL;
-    }
+
     return t;
 }
 
 void find_formulas(int n,vector<double> ar){
     matrix a={.sp=n,.size=n};
     a.ar=ar;
-    brute(&a,1,0);
+    brute(&a,0);
 }
 
 
@@ -206,15 +206,14 @@ vector<double> compress(vector<dd> ar){
 }
 
 int main(){
-    freopen("/home/semih/Desktop/Proj/test/test.in","r",stdin);
 
-    cout<<"N ve sayilari girin:"<<endl;
+    printf("N ve sayilari girin:\n");
     int n; 
-    cin>>n;
+    scanf("%d",&n);
     pts.resize(n);
     for(int i=0;i<n;++i){
         double x,y;
-        cin>>x>>y;
+        scanf("%lf%lf",&x,&y);
         pts[i]={x,y};
     }
     FILE *fp=fopen("points.txt","w");

@@ -43,7 +43,6 @@ for i in lis:
             color="MediumPurple",
             size=10
         ),
-        # opacity=0.8,
         showlegend=False
     )
     Scatters.append(Scatter)
@@ -75,7 +74,6 @@ for i in zip:
             color="red",
             size=11
         ),
-        # opacity=0.8,
         showlegend=False
     )
     Scatters.append(Scatter)
@@ -138,7 +136,6 @@ with open ("formulas.txt","r") as f:
                 x=X,
                 y=np.array(ys),
                 name="Number: {}".format(cnt//2),
-                # marker=dict(color="green"),   
                 showlegend=True
             )
             os.system("mkdir -p "+directory+"/Number_{}".format(cnt//2))
