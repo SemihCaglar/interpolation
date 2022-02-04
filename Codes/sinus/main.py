@@ -97,11 +97,15 @@ all_fig.layout.xaxis.zerolinecolor="blue"
 all_fig.layout.yaxis.zerolinecolor="blue"
 all_fig.layout.yaxis.range=[points_min_y-(points_max_y-points_min_y)/8 , points_max_y+(points_max_y-points_min_y)/8]
 all_fig.layout.xaxis.range=[left,right]
+all_fig.update_xaxes(tickfont=dict(size=14), tickfont_family="Arial Black")
+all_fig.update_yaxes(tickfont=dict(size=14), tickfont_family="Arial Black")
 
 best_fig.layout.xaxis.zerolinecolor="blue"
 best_fig.layout.yaxis.zerolinecolor="blue"
 best_fig.layout.yaxis.range=[points_min_y-(points_max_y-points_min_y)/8 , points_max_y+(points_max_y-points_min_y)/8]
 best_fig.layout.xaxis.range=[left,right]
+best_fig.update_xaxes(tickfont=dict(size=14), tickfont_family="Arial Black")
+best_fig.update_yaxes(tickfont=dict(size=14), tickfont_family="Arial Black")
 
 best_Scatter=0
 
@@ -146,6 +150,8 @@ with open ("formulas.txt","r") as f:
             fig.layout.yaxis.zerolinecolor="blue"
             fig.layout.yaxis.range=[points_min_y-(points_max_y-points_min_y)/8 , points_max_y+(points_max_y-points_min_y)/8]
             fig.layout.xaxis.range=[left,right]
+            fig.update_xaxes(tickfont=dict(size=14), tickfont_family="Arial Black")
+            fig.update_yaxes(tickfont=dict(size=14), tickfont_family="Arial Black")
 
             for i in Scatters:
                 fig.add_trace(i)
